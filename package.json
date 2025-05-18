@@ -1,0 +1,37 @@
+{
+  "name": "tsql",
+  "version": "0.1.0",
+  "description": "A TypeScript SQL library wrapping Kysely with built-in type generation",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "tsql": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "chmod +x dist/cli.js",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.15.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "kysely": "^0.28.2",
+    "kysely-codegen": "^0.18.5",
+    "pg": "^8.16.0"
+  }
+}
