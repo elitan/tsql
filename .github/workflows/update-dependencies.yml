@@ -27,7 +27,7 @@ jobs:
 
       - name: Get current Kysely-Codegen version
         id: current_kysely_codegen
-        run: echo "version=$(jq -r .dependencies."kysely-codegen" package.json)" >> $GITHUB_OUTPUT
+        run: echo "version=$(jq -r '.dependencies["kysely-codegen"]' package.json)" >> $GITHUB_OUTPUT
 
       - name: Get latest Kysely version
         id: latest_kysely
