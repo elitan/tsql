@@ -1,7 +1,11 @@
 {
   "name": "tsql",
   "version": "0.1.0",
-  "description": "A TypeScript SQL library wrapping Kysely with built-in type generation",
+  "description": "A type-safe SQL query builder and database toolkit for TypeScript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elitan/tsql.git"
+  },
   "module": "dist/index.js",
   "main": "dist/index.js",
   "type": "module",
@@ -18,20 +22,25 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "build:js": "bun build ./src/index.ts ./src/cli.ts --outdir ./dist --target node --format esm --external '*'",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
+    "build": "bun run build:js && bun run build:types",
     "postbuild": "chmod +x dist/cli.js",
-    "prepublishOnly": "bun run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "bun run typecheck && bun run build",
+    "dev": "bun run --watch src/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/pg": "^8.15.2"
+    "@types/pg": "^8.15.2",
+    "pg": "^8.16.0"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "kysely": "^0.28.2",
-    "kysely-codegen": "^0.18.5",
-    "pg": "^8.16.0"
+    "kysely-codegen": "^0.18.5"
   }
 }
