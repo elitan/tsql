@@ -19,14 +19,18 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./codegen": {
+      "import": "./dist/codegen/index.js",
+      "types": "./dist/codegen/index.d.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build:js": "bun build ./src/index.ts ./src/cli.ts --outdir ./dist --target node --format esm --external '*'",
+    "build:js": "bun build ./src/index.ts ./src/cli.ts ./src/codegen/index.ts --outdir ./dist --target node --format esm --external '*'",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build": "bun run build:js && bun run build:types",
-    "postbuild": "chmod +x dist/cli.js",
+    "postbuild": "chmod +x dist/cli.js && mkdir -p dist/codegen && cp dist/codegen/index.js dist/codegen/ 2>/dev/null || :",
     "prepare": "npm run build",
     "prepublishOnly": "bun run typecheck && bun run build",
     "dev": "bun run --watch src/index.ts",
