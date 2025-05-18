@@ -7,7 +7,7 @@
     "url": "git+https://github.com/elitan/tsql.git"
   },
   "module": "dist/index.js",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "type": "module",
   "files": [
     "dist"
@@ -18,16 +18,18 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
     "./codegen": {
       "import": "./dist/codegen/index.js",
+      "require": "./dist/codegen/index.cjs",
       "types": "./dist/codegen/index.d.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build:js": "bun build ./src/index.ts ./src/cli.ts ./src/codegen/index.ts --outdir ./dist --target node --format esm --external '*'",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --target node --format esm --external '*' && bun build ./src/index.ts --outdir ./dist --target node --format cjs --external '*' --outfile index.cjs && bun build ./src/cli.ts --outdir ./dist --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outdir ./dist/codegen --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outdir ./dist/codegen --target node --format cjs --external '*' --outfile index.cjs",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build": "bun run build:js && bun run build:types",
     "postbuild": "chmod +x dist/cli.js && mkdir -p dist/codegen && cp dist/codegen/index.js dist/codegen/ 2>/dev/null || :",

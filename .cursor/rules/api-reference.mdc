@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TSQL API Reference
+
+## Core Functions
+
+### createTSQL
+
+The main function to create a database instance:
+
+```typescript
+function createTSQL<DB>(config: KyselyConfig): Kysely<DB>
+```
+
+Example:
+```typescript
+const db = createTSQL<Database>({
+  dialect: new PostgresDialect({ pool }),
+});
+```
+
+## Query Building
+
+TSQL provides a fluent API for building SQL queries:
+
+### Select Operations
+
+```typescript
+db.selectFrom("table")
+  .select(["column1", "column2"])
+  .where("condition", "=", value)
+  .execute();
+```
+
+### Insert Operations
+
+```typescript
+db.insertInto("table")
+  .values({ column1: value1, column2: value2 })
+  .returning("id")
+  .executeTakeFirst();
+```
+
+### Update Operations
+
+```typescript
+db.updateTable("table")
+  .set({ column1: value1 })
+  .where("condition", "=", value)
+  .execute();
+```
+
+### Delete Operations
+
+```typescript
+db.deleteFrom("table")
+  .where("condition", "=", value)
+  .execute();
+```
+
+### Transactions
+
+```typescript
+db.transaction().execute(async (trx) => {
+  // Operations within the transaction
+});
+```
+
+## Code Generation
+
+### CLI Usage
+
+```bash
+npx tsql codegen --url <connection-string> --dialect <dialect> --output <file-path>
+```
+
+### Programmatic Usage
+
+```typescript
+import { generateTypes } from "tsql/codegen";
+
+await generateTypes({
+  url: "connection-string",
+  dialect: "postgres",
+  outputPath: "src/db.d.ts",
+});
+```

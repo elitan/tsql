@@ -1,0 +1,99 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Getting Started with TSQL
+
+## Installation
+
+```bash
+npm install tsql
+```
+
+or with Bun:
+
+```bash
+bun add tsql
+```
+
+## Basic Usage
+
+### 1. Define your database schema
+
+You can either write your database schema manually or generate it using the CLI tool:
+
+```typescript
+// Manual schema definition
+interface Database {
+  users: {
+    id: Generated<number>;
+    name: string;
+    email: string;
+    created_at: Date;
+  };
+  posts: {
+    id: Generated<number>;
+    user_id: number;
+    title: string;
+    content: string;
+    published: boolean;
+    created_at: Date;
+  };
+}
+```
+
+### 2. Create a database connection
+
+```typescript
+import { createTSQL, PostgresDialect } from "tsql";
+import { Pool } from "pg";
+
+// Create a Postgres connection pool
+const pool = new Pool({
+  host: "localhost",
+  database: "my_db",
+  user: "postgres",
+  password: "password",
+});
+
+// Create a TSQL instance
+const db = createTSQL<Database>({
+  dialect: new PostgresDialect({
+    pool,
+  }),
+});
+```
+
+### 3. Query your database
+
+```typescript
+// Select query
+const users = await db
+  .selectFrom("users")
+  .select(["id", "name", "email"])
+  .where("id", "=", 1)
+  .execute();
+
+// Insert data
+const newUser = await db
+  .insertInto("users")
+  .values({
+    name: "Jane Doe",
+    email: "jane@example.com",
+    created_at: new Date(),
+  })
+  .returning("id")
+  .executeTakeFirst();
+
+// Update data
+await db
+  .updateTable("users")
+  .set({ name: "Jane Smith" })
+  .where("id", "=", newUser.id)
+  .execute();
+```
+
+## Examples
+
+See [examples/basic.ts](mdc:examples/basic.ts) for a complete example of how to use TSQL.

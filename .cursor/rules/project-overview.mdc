@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TSQL: Type-safe SQL Query Builder
+
+TSQL is a type-safe SQL query builder and database toolkit for TypeScript.
+
+## Project Structure
+
+- [src/index.ts](mdc:src/index.ts): Main entry point of the library
+- [src/cli.ts](mdc:src/cli.ts): CLI tool for code generation
+- [src/codegen/index.ts](mdc:src/codegen/index.ts): Code generation utilities
+- [examples/basic.ts](mdc:examples/basic.ts): Example usage of the library
+
+## Core Concepts
+
+TSQL is built on top of [Kysely](mdc:https:/github.com/koskimas/kysely), a type-safe SQL query builder for TypeScript. TSQL provides additional functionality including:
+
+1. Fully type-safe SQL query builder with a fluent API
+2. Automatic type generation from database schema
+3. Database migrations support
+4. Transaction handling
+
+## Key Features
+
+- `createTSQL<DB>`: Factory function to create a new database instance
+- Type generation via CLI: `npx tsql codegen --url <connection-string> --dialect <dialect>`
+- Support for PostgreSQL, MySQL, SQLite, and MSSQL
+- Transaction support with full type safety

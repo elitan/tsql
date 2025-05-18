@@ -1,0 +1,66 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TSQL Code Generation Guide
+
+TSQL provides tools to automatically generate TypeScript types from your database schema.
+
+## CLI Usage
+
+The CLI tool is the easiest way to generate types from your database schema:
+
+```bash
+npx tsql codegen --url <connection-string> --dialect <dialect> [options]
+```
+
+Options:
+- `--url`: Database connection string (required)
+- `--dialect`: Database dialect (postgres, mysql, sqlite, mssql) (required)
+- `--output`: Output file path (default: src/db.d.ts)
+- `--camel-case`: Use camelCase for column names
+- `--verbose`: Show verbose output
+
+## Programmatic Usage
+
+Import the `generateTypes` function from the `codegen` module:
+
+```typescript
+import { generateTypes } from "tsql/codegen";
+
+await generateTypes({
+  url: "postgres://user:password@localhost/db_name",
+  dialect: "postgres",
+  outputPath: "src/db.d.ts",
+  camelCase: false, // optional
+  verbose: true, // optional
+  additionalOptions: {}, // optional
+});
+```
+
+## Database Types
+
+After generating types, you can use them with your TSQL instance:
+
+```typescript
+// Import the generated database interface
+import { Database } from "./db";
+
+// Create a database instance with the correct types
+const db = createTSQL<Database>({
+  dialect: new PostgresDialect({ pool }),
+});
+
+// Now all queries are fully type-safe
+const users = await db
+  .selectFrom("users")
+  .selectAll()
+  .execute();
+```
+
+The generated types ensure:
+- Table names are validated at compile time
+- Column names are validated at compile time
+- Query results are typed correctly
+- Insert and update operations validate input data types

@@ -1,72 +1,11 @@
-import {
-  Kysely,
-  KyselyConfig,
-  PostgresDialect,
-  MysqlDialect,
-  MssqlDialect,
-  SqliteDialect,
-  QueryCompiler,
-  DialectAdapter,
-  QueryExecutor,
-  DatabaseConnection,
-  Driver,
-  Dialect,
-  sql,
-  SelectExpression,
-  SelectQueryBuilder,
-  InsertQueryBuilder,
-  UpdateQueryBuilder,
-  DeleteQueryBuilder,
-  InsertResult,
-  UpdateResult,
-  DeleteResult,
-  ExpressionWrapper,
-  SqlBool,
-  Transaction,
-  TransactionBuilder,
-  RawBuilder,
-  Selectable,
-  Updateable,
-  Insertable,
-  Generated,
-} from "kysely";
-
-// Re-export all the main Kysely functionality
-export {
-  sql,
-  SelectExpression,
-  SqlBool,
-  RawBuilder,
-  ExpressionWrapper,
-  Transaction,
-  PostgresDialect,
-  MysqlDialect,
-  MssqlDialect,
-  SqliteDialect,
-  QueryCompiler,
-  DialectAdapter,
-  QueryExecutor,
-  DatabaseConnection,
-  Driver,
-  Dialect,
-  Kysely,
-  Generated,
-};
-
-// Re-export kysely types
-export type {
-  Selectable,
-  Updateable,
-  Insertable,
-  InsertResult,
-  UpdateResult,
-  DeleteResult,
-  TransactionBuilder,
-  KyselyConfig,
-};
+// Re-export everything from kysely
+export * from "kysely";
 
 // Export codegen functionality
 export * from "./codegen";
+
+// Import just what we need for createTSQL
+import { Kysely, KyselyConfig } from "kysely";
 
 /**
  * Create a new Kysely database instance.
