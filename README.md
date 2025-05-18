@@ -116,6 +116,15 @@ async function main() {
 main().catch(console.error);
 ```
 
+## Contributions
+
+tSQL builds upon the excellent work of the following open-source projects:
+
+- [Kysely](https://github.com/kysely-org/kysely): A type-safe SQL query builder for TypeScript.
+- [kysely-codegen](https://github.com/RobinBlomberg/kysely-codegen): A code generator for Kysely.
+
+We are grateful to the maintainers and contributors of these projects.
+
 ## License
 
 MIT
