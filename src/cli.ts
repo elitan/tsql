@@ -7,8 +7,7 @@ const DEFAULT_OUTPUT = "src/db.d.ts";
 
 type CliAdditionalOptions = Record<string, string | boolean>;
 
-function parseArgs(): TSQLCodegenOptions {
-  const args = process.argv.slice(2);
+function parseCodegenArgs(args: string[]): TSQLCodegenOptions {
   const options: TSQLCodegenOptions = {
     url: "",
     dialect: "postgres", // Default, will be validated later
@@ -50,7 +49,7 @@ function parseArgs(): TSQLCodegenOptions {
     } else if (arg === "--verbose") {
       options.verbose = true;
     } else if (arg === "--help" || arg === "-h") {
-      printHelp();
+      printCodegenHelp();
       process.exit(0);
     } else if (arg && arg.startsWith("--")) {
       // Handle additional options
@@ -67,7 +66,7 @@ function parseArgs(): TSQLCodegenOptions {
 
   if (!options.url) {
     console.error("Error: --url option is required");
-    printHelp();
+    printCodegenHelp();
     process.exit(1);
   }
 
@@ -79,12 +78,26 @@ function parseArgs(): TSQLCodegenOptions {
   return options;
 }
 
-function printHelp(): void {
+function printMainHelp(): void {
   console.log(`
-tsql - Generate TypeScript interfaces from database schema
+tsql - A type-safe SQL query builder and database toolkit for TypeScript
 
 Usage:
-  tsql --url <connection-string> --dialect <dialect> [options]
+  tsql <command> [options]
+
+Commands:
+  codegen    Generate TypeScript interfaces from database schema
+  
+  Run 'tsql <command> --help' for more information on a specific command.
+  `);
+}
+
+function printCodegenHelp(): void {
+  console.log(`
+tsql codegen - Generate TypeScript interfaces from database schema
+
+Usage:
+  tsql codegen --url <connection-string> --dialect <dialect> [options]
 
 Options:
   --url <connection-string>   Database connection string
@@ -98,8 +111,8 @@ Any additional options will be passed directly to kysely-codegen.
   `);
 }
 
-async function main(): Promise<void> {
-  const options = parseArgs();
+async function runCodegen(args: string[]): Promise<void> {
+  const options = parseCodegenArgs(args);
 
   try {
     await generateTypes(options);
@@ -109,6 +122,28 @@ async function main(): Promise<void> {
   } catch (error) {
     console.error("Error generating types:", error);
     process.exit(1);
+  }
+}
+
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+
+  if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
+    printMainHelp();
+    process.exit(0);
+  }
+
+  const command = args[0];
+  const commandArgs = args.slice(1);
+
+  switch (command) {
+    case "codegen":
+      await runCodegen(commandArgs);
+      break;
+    default:
+      console.error(`Error: Unknown command "${command}"`);
+      printMainHelp();
+      process.exit(1);
   }
 }
 
