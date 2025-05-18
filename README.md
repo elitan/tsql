@@ -1,13 +1,51 @@
 # tsql
 
-A TypeScript SQL library built on top of [Kysely](https://github.com/kysely-org/kysely) with a simplified API.
+A type-safe SQL query builder and database toolkit for TypeScript.
 
 ## Features
 
-- Type-safe query builder using Kysely
-- Built-in type generation functionality similar to kysely-codegen
-- Simple, consistent API focused on developer experience
+- Fully type-safe SQL query builder with a fluent API
+- Automatic type generation from your database schema
+- Database migrations support
+- Transaction handling
 - Written entirely in TypeScript with full type safety
+
+## Type Safety in Action
+
+```typescript
+// Write SQL queries with full type safety
+const user = await db
+  .selectFrom("users")
+  .select(["id", "name", "email"])
+  .where("id", "=", 1)
+  .executeTakeFirst();
+
+// TypeScript knows the exact type:
+// user: { id: number; name: string; email: string } | undefined
+
+if (user) {
+  // Full autocomplete for all properties
+  user.id; // number
+  user.name; // string
+  user.email; // string
+
+  // Compile-time error detection:
+  user.age; // Error: Property 'age' does not exist
+}
+
+// Type checking on conditions
+db.selectFrom("users")
+  .where("active", "=", "yes") // Type error: column 'active' expects boolean, not string
+  .execute();
+
+// Type-safe inserts and updates
+await db.insertInto("users").values({
+  name: "Jane", // string ✓
+  email: "jane@test.com", // string ✓
+  active: true, // boolean ✓
+  // id is auto-generated, TypeScript knows it's not required
+});
+```
 
 ## Installation
 
@@ -44,7 +82,7 @@ const db = createTSQL<Database>({
   }),
 });
 
-// Now you can use db with Kysely's API
+// Use the fluent API to build and execute queries
 const users = await db
   .selectFrom("users")
   .selectAll()
@@ -54,7 +92,7 @@ const users = await db
 
 ### Generating Types
 
-You can generate TypeScript types from your database schema using the CLI:
+Generate TypeScript types from your database schema using the CLI:
 
 ```bash
 npx tsql --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts
@@ -76,19 +114,71 @@ await generateTypes({
 
 ## API
 
-`tsql` re-exports all the functionality from Kysely, so you can use it exactly as you would use Kysely.
-
 ### createTSQL
 
-Creates a new database instance with the same API as Kysely.
+Creates a new database instance with full type safety.
 
 ```typescript
 const db = createTSQL<Database>(config);
 ```
 
-### generateTypes
+### Query Building
 
-Generates TypeScript types from your database schema.
+tsql provides a fluent, type-safe API for building SQL queries:
+
+```typescript
+// Select queries
+const users = await db
+  .selectFrom("users")
+  .select(["id", "name", "email"])
+  .where("active", "=", true)
+  .execute();
+
+// Insert operations
+const newUser = await db
+  .insertInto("users")
+  .values({
+    name: "John Doe",
+    email: "john@example.com",
+  })
+  .returning("id")
+  .executeTakeFirstOrThrow();
+
+// Update operations
+await db
+  .updateTable("users")
+  .set({ lastLogin: new Date() })
+  .where("id", "=", userId)
+  .execute();
+
+// Delete operations
+await db.deleteFrom("users").where("inactive", "=", true).execute();
+```
+
+### Transactions
+
+```typescript
+await db.transaction().execute(async (trx) => {
+  // All queries in here are part of the same transaction
+  const userId = await trx
+    .insertInto("users")
+    .values(newUser)
+    .returning("id")
+    .executeTakeFirstOrThrow();
+
+  await trx
+    .insertInto("user_settings")
+    .values({
+      userId: userId.id,
+      theme: "dark",
+    })
+    .execute();
+});
+```
+
+### Type Generation
+
+Generate TypeScript types from your database schema:
 
 ```typescript
 await generateTypes({
@@ -97,7 +187,7 @@ await generateTypes({
   outputPath: "path/to/output/file.d.ts",
   camelCase: false, // Optional
   verbose: false, // Optional
-  additionalOptions: {}, // Optional, passed directly to kysely-codegen
+  additionalOptions: {}, // Optional additional config options
 });
 ```
 
