@@ -1,6 +1,6 @@
 {
-  "title": "Kysely",
-  "description": "Kysely is a type-safe and autocompletion-friendly TypeScript SQL query builder. Inspired by Knex. Mainly developed for node.js but also runs on all other JavaScript environments like deno and bun.",
+  "title": "tSQL",
+  "description": "tSQL is a TypeScript library for building SQL queries. It is a fork of Kysely, but with some additional features and a different API.",
   "icon": "Building2",
   "root": true,
   "pages": [
