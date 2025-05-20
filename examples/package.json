@@ -1,0 +1,17 @@
+{
+  "name": "examples",
+  "private": true,
+  "scripts": {
+    "db:codegen": "tsql codegen --url postgres://postgres:password@localhost:5432/postgres --dialect postgres --output src/db.d.ts --camel-case",
+    "start": "bun run src/main.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@elitan/tsql": "^0.0.1"
+  }
+}

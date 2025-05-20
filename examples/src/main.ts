@@ -1,41 +1,13 @@
-import { createTSQL, Generated, PostgresDialect, sql, SqlBool } from "../dist";
+import {
+  CamelCasePlugin,
+  createTSQL,
+  PostgresDialect,
+  sql,
+  type SqlBool,
+} from "@elitan/tsql";
 import { Pool } from "pg";
 
-/*
-create table posts (
-    id serial primary key,
-    title text not null,
-    content text not null,
-    published_at timestamptz default current_timestamp,
-    updated_at timestamptz default current_timestamp
-);
-
-create table comments (
-    id serial primary key,
-    post_id integer references posts(id),
-    author_name text not null,
-    comment_text text not null,
-    created_at timestamptz default current_timestamp
-);
-*/
-
-// Define the database schema based on the new DDL
-interface Database {
-  posts: {
-    id: Generated<number>;
-    title: string;
-    content: string;
-    published_at: Date | null; // timestamptz DEFAULT CURRENT_TIMESTAMP
-    updated_at: Date | null; // timestamptz DEFAULT CURRENT_TIMESTAMP
-  };
-  comments: {
-    id: Generated<number>;
-    post_id: number; // Foreign key to posts.id
-    author_name: string;
-    comment_text: string;
-    created_at: Date | null; // timestamptz DEFAULT CURRENT_TIMESTAMP
-  };
-}
+import type { DB } from "./db";
 
 async function main() {
   // Create a Postgres connection pool
@@ -43,14 +15,16 @@ async function main() {
   // Update connection details if necessary (e.g., host, database, user, password).
   const pool = new Pool({
     host: "localhost",
-    database: "postgres", // Database name where tables defined in the DDL are created
-    user: "postgres", // Your PostgreSQL username
-    password: "password", // Your PostgreSQL password
+    port: 5432,
+    database: "postgres",
+    user: "postgres",
+    password: "password",
   });
 
   // Initialize TSQL
-  const db = createTSQL<Database>({
+  const db = createTSQL<DB>({
     dialect: new PostgresDialect({ pool }),
+    plugins: [new CamelCasePlugin()],
   });
 
   try {
@@ -66,17 +40,17 @@ async function main() {
     console.log("\\nFetching posts with their comments...");
     const postsWithComments = await db
       .selectFrom("posts")
-      .leftJoin("comments", "comments.post_id", "posts.id")
+      .leftJoin("comments", "comments.postId", "posts.id")
       .select([
-        "posts.id as post_id",
-        "posts.title as post_title",
-        "posts.content as post_content",
-        "comments.id as comment_id",
-        "comments.author_name",
-        "comments.comment_text",
-        "comments.created_at as comment_created_at",
+        "posts.id as postId",
+        "posts.title as title",
+        "posts.content as content",
+        "comments.id as commentId",
+        "comments.authorName",
+        "comments.commentText",
+        "comments.createdAt as createdAt",
       ])
-      .where("posts.published_at", "is not", null) // Example: only for published posts
+      .where("posts.publishedAt", "is not", null) // Example: only for published posts
       .orderBy("posts.id", "asc")
       .orderBy("comments.id", "asc") // Order comments for each post
       .execute();
@@ -124,10 +98,10 @@ async function main() {
       // Insert a comment for the new post
       console.log(`\\nInserting a comment for post ID ${newPost.id}...`);
       const newCommentValues = {
-        post_id: newPost.id,
-        author_name: "AI Commenter",
-        comment_text: "This is a great example of TSQL in action!",
-        // created_at will be set by DB default (CURRENT_TIMESTAMP)
+        postId: newPost.id,
+        authorName: "AI Commenter",
+        commentText: "This is a great example of TSQL in action!",
+        // createdAt will be set by DB default (CURRENT_TIMESTAMP)
       };
       const newComment = await db
         .insertInto("comments")
@@ -143,7 +117,7 @@ async function main() {
         .updateTable("posts")
         .set({
           title: newPost.title + " (Updated with additional insights)",
-          updated_at: new Date(),
+          updatedAt: new Date(),
         }) // Explicitly set updated_at
         .where("id", "=", newPost.id)
         .returningAll()

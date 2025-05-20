@@ -148,17 +148,17 @@ async function main(): Promise<void> {
 }
 
 // Only run when this file is executed directly (not imported)
-console.log("[DEBUG] Script path (process.argv[1]):", process.argv[1]);
-console.log("[DEBUG] Module URL (import.meta.url):", import.meta.url);
-const condition = import.meta.url === `file://${process.argv[1]}`;
-console.log(
-  "[DEBUG] Condition (import.meta.url === `file://${process.argv[1]}`):",
-  condition
-);
+// console.log("[DEBUG] Script path (process.argv[1]):", process.argv[1]);
+// console.log("[DEBUG] Module URL (import.meta.url):", import.meta.url);
+// const condition = import.meta.url === `file://${process.argv[1]}`;
+// console.log(
+//   "[DEBUG] Condition (import.meta.url === `file://${process.argv[1]}`):",
+//   condition
+// );
 
-if (condition) {
-  main().catch((err) => {
-    console.error("Unhandled error:", err);
-    process.exit(1);
-  });
-}
+// if (condition) { // <--- Temporarily bypass this
+main().catch((err) => {
+  console.error("Unhandled error:", err);
+  process.exit(1);
+});
+// } // <--- Temporarily bypass this

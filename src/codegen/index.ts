@@ -87,6 +87,13 @@ export function generateTypes(options: TSQLCodegenOptions): Promise<void> {
       stdio: verbose ? "inherit" : "pipe",
     });
 
+    let stderrData = "";
+    if (childProcess.stderr && !verbose) {
+      childProcess.stderr.on("data", (data) => {
+        stderrData += data.toString();
+      });
+    }
+
     childProcess.on("close", (code) => {
       if (code === 0) {
         if (verbose) {
@@ -94,12 +101,17 @@ export function generateTypes(options: TSQLCodegenOptions): Promise<void> {
         }
         resolve();
       } else {
-        reject(new Error(`kysely-codegen failed with exit code ${code}`));
+        let errorMsg = `TSQL code generation failed with exit code ${code}.`;
+        if (stderrData) {
+          errorMsg += `\nDetails:\n${stderrData}`;
+        }
+        reject(new Error(errorMsg));
       }
     });
 
     childProcess.on("error", (err) => {
-      reject(err);
+      // This 'error' event is for issues like the command not being found
+      reject(new Error(`TSQL code generation failed to start: ${err.message}`));
     });
   });
 }
