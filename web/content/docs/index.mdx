@@ -25,31 +25,21 @@ const users = await db
 - Transaction handling
 - Written entirely in TypeScript with full type safety
 
-## Prerequisites
-
-Before getting started with tSQL, make sure you have:
-
-1.  Node.js (e.g., version 18.x or later recommended) installed.
-2.  [TypeScript](https://www.typescriptlang.org/) (version 4.6 or later) installed in your project.
-3.  TypeScript's [strict mode](https://www.typescriptlang.org/tsconfig/#strict) enabled in your `tsconfig.json` for the best type-safety experience.
-
 ## Getting Started
-
-Follow these steps to get started with tSQL:
 
 ### 1. Install tSQL and Necessary Packages
 
-You'll need `tsql` itself, a database driver (like `pg` for PostgreSQL), and potentially `kysely` if you plan to use plugins like `CamelCasePlugin` directly from it.
+You'll need `tsql` itself and a database driver (like `pg` for PostgreSQL, which we will use in this example).
 
 ```package-install
-tsql pg kysely
+tsql pg
 ```
 
 ### 2. Generate Types
 
-First, let's assume you have a `posts` table in your database (e.g., PostgreSQL) with the following schema:
+First, let's assume you have a `posts` table in your database with the following schema:
 
-```sql title="Database Schema (e.g., PostgreSQL)"
+```sql title="Database Schema"
 create table posts (
   id serial primary key,
   title text not null,
@@ -149,9 +139,7 @@ async function main() {
     );
   }
 
-  // Clean up resources when your application is shutting down
-  // The specific method might depend on your application structure and tSQL version
-  await db.destroy(); // Kysely instances often have a destroy method
+  await db.destroy();
 }
 
 main().catch((error) => {
@@ -160,47 +148,7 @@ main().catch((error) => {
 });
 ```
 
-Adjust the import path `import type { Database } from "./db";` based on the location of your `db.d.ts` file relative to where you're writing your queries.
-
-## Dialects
-
-tSQL supports multiple SQL databases through dialects, building upon Kysely's robust dialect system. The "Connect and Query" example above uses `PostgresDialect`. To work with other databases like MySQL, Microsoft SQL Server (MSSQL), or SQLite, you would use their respective dialects (e.g., `MysqlDialect`, `MssqlDialect`, `SqliteDialect` – typically available from the `tsql` package or as peer Kysely dialects) and install the necessary database drivers.
-
-For instance, to use MySQL, you would first install the `mysql2` driver:
-
-```package-install
-mysql2
-```
-
-And then configure your `tsql` instance similarly:
-
-```ts title="src/app.ts (MySQL Example)"
-import { createTSQL, MysqlDialect } from "tsql"; // Assuming MysqlDialect from tsql
-import { CamelCasePlugin } from "kysely";
-import type { Database } from "./db"; // Your generated database types
-import { createPool } from "mysql2"; // MySQL2 driver
-
-const pool = createPool({
-  host: "localhost",
-  database: "my_mysql_db",
-  user: "mysql_user",
-  password: "password",
-  connectionLimit: 10,
-});
-
-const db = createTSQL<Database>({
-  dialect: new MysqlDialect({
-    pool,
-  }),
-  plugins: [new CamelCasePlugin()],
-});
-
-// ... your application logic using db ...
-```
-
-Always refer to the specific documentation for each dialect and driver for detailed configuration options.
-
-## Contributions
+## Acknowledgements
 
 tSQL builds upon the excellent work of the following open-source projects:
 
