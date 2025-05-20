@@ -39,8 +39,7 @@
     "test": "bun test",
     "release:patch": "bun test && npm version patch -m \"chore(release): v%s\" && npm publish --access public && git push --follow-tags",
     "release:minor": "bun test && npm version minor -m \"feat(release): v%s\" && npm publish --access public && git push --follow-tags",
-    "release:major": "bun test && npm version major -m \"feat(release): v%s\" && npm publish --access public && git push --follow-tags",
-    "release:dry-run": "bun test && npm version patch -m \"chore(release): v%s\" && npm publish --access public --dry-run && git push --follow-tags"
+    "release:major": "bun test && npm version major -m \"feat(release): v%s\" && npm publish --access public && git push --follow-tags"
   },
   "devDependencies": {
     "@types/bun": "latest",
