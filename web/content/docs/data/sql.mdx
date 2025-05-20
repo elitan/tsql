@@ -1,19 +1,19 @@
 ---
 title: Raw SQL
-description: Learn how to use raw SQL in Kysely.
+description: Learn how to use raw SQL in tSQL.
 ---
 
 The `sql` template tag lets you write raw SQL snippets while maintaining safety and type information:
 
 ```typescript
-import { sql } from 'kysely'
+import { sql } from "kysely";
 
 // Basic usage with parameters
-const id = 123
-const query = sql<Person[]>`select * from person where id = ${id}`
+const id = 123;
+const query = sql<Person[]>`select * from person where id = ${id}`;
 
 // Execute the query
-const result = await query.execute(db)
+const result = await query.execute(db);
 ```
 
 ## Key Features
@@ -29,34 +29,34 @@ const result = await query.execute(db)
 
 ```typescript
 const persons = await db
-  .selectFrom('person')
+  .selectFrom("person")
   .select([
     // Use .as() to alias SQL expressions
-    sql<string>`concat(first_name, ' ', last_name)`.as('full_name'),
+    sql<string>`concat(first_name, ' ', last_name)`.as("full_name"),
   ])
-  .execute()
+  .execute();
 ```
 
 ### In Where Clauses
 
 ```typescript
 const result = await db
-  .selectFrom('person')
+  .selectFrom("person")
   .selectAll()
   .where(sql`birthdate between ${startDate} and ${endDate}`)
-  .execute()
+  .execute();
 ```
 
 ### Combining with Other Queries
 
 ```typescript
-const petQuery = db.selectFrom('pet').select('name').limit(1)
-const nameExpr = sql`concat(first_name, ' ', last_name)`
+const petQuery = db.selectFrom("pet").select("name").limit(1);
+const nameExpr = sql`concat(first_name, ' ', last_name)`;
 
 const combined = sql`
   select ${nameExpr} as full_name, ${petQuery} as pet_name
   from person
-`
+`;
 ```
 
 ## Utility Functions
@@ -66,8 +66,8 @@ const combined = sql`
 Creates safe column references:
 
 ```typescript
-const columnName = 'first_name'
-sql`select ${sql.ref(columnName)} from person`
+const columnName = "first_name";
+sql`select ${sql.ref(columnName)} from person`;
 // Result: select "first_name" from person
 ```
 
@@ -76,8 +76,8 @@ sql`select ${sql.ref(columnName)} from person`
 Creates safe table references:
 
 ```typescript
-const tableName = 'person'
-sql`select * from ${sql.table(tableName)}`
+const tableName = "person";
+sql`select * from ${sql.table(tableName)}`;
 // Result: select * from "person"
 ```
 
@@ -86,12 +86,12 @@ sql`select * from ${sql.table(tableName)}`
 Creates comma-separated lists:
 
 ```typescript
-const nicknames = ['nick1', 'nick2', 'nick3']
-sql`select * from person where nickname in (${sql.join(nicknames)})`
+const nicknames = ["nick1", "nick2", "nick3"];
+sql`select * from person where nickname in (${sql.join(nicknames)})`;
 // Result: select * from person where nickname in ($1, $2, $3)
 
 // Custom separator
-sql.join(items, sql`::varchar, `)
+sql.join(items, sql`::varchar, `);
 ```
 
 ### sql.lit() - Literal Values
@@ -99,7 +99,7 @@ sql.join(items, sql`::varchar, `)
 Adds literal values (use with caution):
 
 ```typescript
-sql`select * from person where status = ${sql.lit('active')}`
+sql`select * from person where status = ${sql.lit("active")}`;
 // Result: select * from person where status = 'active'
 ```
 
@@ -108,7 +108,7 @@ sql`select * from person where status = ${sql.lit('active')}`
 Adds raw SQL (use with caution):
 
 ```typescript
-sql`select * from ${sql.raw('person')} where active = true`
+sql`select * from ${sql.raw("person")} where active = true`;
 // Result: select * from person where active = true
 ```
 
@@ -116,13 +116,13 @@ sql`select * from ${sql.raw('person')} where active = true`
 
 ```typescript
 // Type-safe column references
-db.selectFrom('person')
+db.selectFrom("person")
   .select((eb) => {
-    const firstName = eb.ref('first_name')
-    const lastName = eb.ref('last_name')
-    return sql<string>`concat(${firstName}, ' ', ${lastName})`.as('full_name')
+    const firstName = eb.ref("first_name");
+    const lastName = eb.ref("last_name");
+    return sql<string>`concat(${firstName}, ' ', ${lastName})`.as("full_name");
   })
-  .execute()
+  .execute();
 ```
 
 ## Important Notes

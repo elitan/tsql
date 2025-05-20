@@ -1,6 +1,6 @@
 ---
 title: Delete
-description: Learn how to delete data using Kysely's type-safe deleteFrom() method. From simple deletions to returning deleted data, master database DELETE operations in TypeScript with full type safety and autocomplete support.
+description: Learn how to delete data using tSQL's type-safe deleteFrom() method. From simple deletions to returning deleted data, master database DELETE operations in TypeScript with full type safety and autocomplete support.
 ---
 
 The `deleteFrom` method allows you to delete rows from a table.
@@ -13,7 +13,7 @@ The simplest way to delete rows is using the `deleteFrom` method:
   <Tab value="typescript">
 
 ```typescript
-await db.deleteFrom('movies').execute()
+await db.deleteFrom("movies").execute();
 ```
 
 </Tab>
@@ -35,10 +35,10 @@ On supported databases like PostgreSQL, you can return data from deleted rows:
 
 ```typescript
 const deletedMovie = await db
-  .deleteFrom('movies')
-  .where('id', '=', 123)
-  .returning(['id', 'title'])
-  .executeTakeFirst()
+  .deleteFrom("movies")
+  .where("id", "=", 123)
+  .returning(["id", "title"])
+  .executeTakeFirst();
 
 // Returns: { id: 123, title: 'The Matrix' }
 ```
@@ -62,10 +62,10 @@ You can return all columns using `returningAll()`:
 
 ```typescript
 const deletedMovie = await db
-  .deleteFrom('movies')
-  .where('id', '=', 123)
+  .deleteFrom("movies")
+  .where("id", "=", 123)
   .returningAll()
-  .executeTakeFirst()
+  .executeTakeFirst();
 
 // Returns all columns from the deleted row
 ```
@@ -91,11 +91,11 @@ You can get the number of deleted rows from the result:
 
 ```typescript
 const result = await db
-  .deleteFrom('movies')
-  .where('rating', '<', 5)
-  .executeTakeFirst()
+  .deleteFrom("movies")
+  .where("rating", "<", 5)
+  .executeTakeFirst();
 
-console.log(`Deleted ${result.numDeletedRows} movies`)
+console.log(`Deleted ${result.numDeletedRows} movies`);
 ```
 
 </Tab>

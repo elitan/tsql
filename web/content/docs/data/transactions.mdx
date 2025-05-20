@@ -1,6 +1,6 @@
 ---
 title: Transactions
-description: Learn how to use transactions in Kysely.
+description: Learn how to use transactions in tSQL.
 ---
 
 ## Basic usage
@@ -9,39 +9,39 @@ description: Learn how to use transactions in Kysely.
 const result = await db.transaction().execute(async (trx) => {
   // First, create our superhero
   const batman = await trx
-    .insertInto('person')
+    .insertInto("person")
     .values({
-      first_name: 'Bruce',
-      last_name: 'Wayne',
+      first_name: "Bruce",
+      last_name: "Wayne",
       age: 35,
     })
-    .returning('id')
-    .executeTakeFirstOrThrow()
+    .returning("id")
+    .executeTakeFirstOrThrow();
 
   // Then add his trusty sidekick
   const robin = await trx
-    .insertInto('pet')
+    .insertInto("pet")
     .values({
       owner_id: batman.id,
-      name: 'Robin',
-      species: 'human',
+      name: "Robin",
+      species: "human",
       is_favorite: true, // Don't tell the other sidekicks
     })
     .returningAll()
-    .executeTakeFirst()
+    .executeTakeFirst();
 
   // Finally add his noble steed
   const batmobile = await trx
-    .insertInto('pet')
+    .insertInto("pet")
     .values({
       owner_id: batman.id,
-      name: 'Batmobile',
-      species: 'car',
+      name: "Batmobile",
+      species: "car",
       is_favorite: true, // He loves it equally
     })
     .returningAll()
-    .executeTakeFirst()
+    .executeTakeFirst();
 
-  return { robin, batmobile }
-})
+  return { robin, batmobile };
+});
 ```

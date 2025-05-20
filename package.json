@@ -1,6 +1,6 @@
 {
-  "name": "tsql",
-  "version": "0.1.0",
+  "name": "@elitan/tsql",
+  "version": "0.0.1",
   "description": "A type-safe SQL query builder and database toolkit for TypeScript",
   "repository": {
     "type": "git",
@@ -36,7 +36,11 @@
     "prepare": "npm run build",
     "prepublishOnly": "bun run typecheck && bun run build",
     "dev": "bun run --watch src/index.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "release:patch": "bun test && npm version patch -m \"chore(release): v%s\" && npm publish --access public && git push --follow-tags",
+    "release:minor": "bun test && npm version minor -m \"feat(release): v%s\" && npm publish --access public && git push --follow-tags",
+    "release:major": "bun test && npm version major -m \"feat(release): v%s\" && npm publish --access public && git push --follow-tags",
+    "release:dry-run": "bun test && npm version patch -m \"chore(release): v%s\" && npm publish --access public --dry-run && git push --follow-tags"
   },
   "devDependencies": {
     "@types/bun": "latest",

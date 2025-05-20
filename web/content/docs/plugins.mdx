@@ -1,10 +1,10 @@
 ---
 title: Plugins
-description: Learn how to use plugins in Kysely.
+description: Learn how to use plugins in tSQL.
 icon: Blocks
 ---
 
-Plugins in Kysely are powerful extensions that modify or enhance query behavior. Each plugin is implemented as a class that conforms to the `KyselyPlugin` interface.
+Plugins in tSQL are powerful extensions that modify or enhance query behavior. Each plugin is implemented as a class that conforms to the `KyselyPlugin` interface.
 
 ## Adding Plugins
 
@@ -13,14 +13,14 @@ To use plugins, add them to your Kysely database instance configuration:
 ```typescript
 const db = new Kysely<Database>({
   dialect: new PostgresDialect({
-    database: 'kysely_test',
-    host: 'localhost',
+    database: "kysely_test",
+    host: "localhost",
   }),
   plugins: [
     // Add plugins here
     new CamelCasePlugin(),
   ],
-})
+});
 ```
 
 For implementation examples and advanced usage, see:
