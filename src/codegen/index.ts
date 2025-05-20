@@ -103,5 +103,3 @@ export function generateTypes(options: TSQLCodegenOptions): Promise<void> {
     });
   });
 }
-
-export default generateTypes;

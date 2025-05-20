@@ -128,7 +128,3 @@ We are grateful to the maintainers and contributors of these projects.
 ## License
 
 MIT
-
-```
-
-```

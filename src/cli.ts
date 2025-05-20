@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { generateTypes, TSQLCodegenOptions } from "./codegen/index.js";
-import path from "path";
 
 const DEFAULT_OUTPUT = "src/db.d.ts";
 
@@ -127,6 +126,7 @@ async function runCodegen(args: string[]): Promise<void> {
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
+  console.log("Received args:", args);
 
   if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
     printMainHelp();
@@ -148,7 +148,15 @@ async function main(): Promise<void> {
 }
 
 // Only run when this file is executed directly (not imported)
-if (import.meta.url === `file://${process.argv[1]}`) {
+console.log("[DEBUG] Script path (process.argv[1]):", process.argv[1]);
+console.log("[DEBUG] Module URL (import.meta.url):", import.meta.url);
+const condition = import.meta.url === `file://${process.argv[1]}`;
+console.log(
+  "[DEBUG] Condition (import.meta.url === `file://${process.argv[1]}`):",
+  condition
+);
+
+if (condition) {
   main().catch((err) => {
     console.error("Unhandled error:", err);
     process.exit(1);

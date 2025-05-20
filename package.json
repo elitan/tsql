@@ -29,10 +29,10 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --target node --format esm --external '*' && bun build ./src/index.ts --outdir ./dist --target node --format cjs --external '*' --outfile index.cjs && bun build ./src/cli.ts --outdir ./dist --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outdir ./dist/codegen --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outdir ./dist/codegen --target node --format cjs --external '*' --outfile index.cjs",
+    "build:js": "bun build ./src/index.ts --outfile ./dist/index.js --target node --format esm --external '*' && bun build ./src/index.ts --outfile ./dist/index.cjs --target node --format cjs --external '*' && bun build ./src/cli.ts --outfile ./dist/cli.js --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outfile ./dist/codegen/index.js --target node --format esm --external '*' && bun build ./src/codegen/index.ts --outfile ./dist/codegen/index.cjs --target node --format cjs --external '*'",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "build": "bun run build:js && bun run build:types",
-    "postbuild": "chmod +x dist/cli.js && mkdir -p dist/codegen && cp dist/codegen/index.js dist/codegen/ 2>/dev/null || :",
+    "postbuild": "chmod +x dist/cli.js && mkdir -p dist/codegen",
     "prepare": "npm run build",
     "prepublishOnly": "bun run typecheck && bun run build",
     "dev": "bun run --watch src/index.ts",
