@@ -23,6 +23,6 @@ export const baseOptions: BaseLayoutProps = {
       </>
     ),
   },
-  // see https://fumadocs.dev/docs/ui/navigation/links
+  githubUrl: "https://github.com/tsql-dev/tsql",
   links: [],
 };
