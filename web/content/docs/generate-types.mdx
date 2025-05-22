@@ -7,3 +7,162 @@ icon: Code
 ```package-install
 tsql codegen
 ```
+
+## Generate Database Types
+
+tSQL's code generation feature allows you to automatically create TypeScript type definitions from your database schema. This provides type safety when working with your database, reducing errors and improving developer experience.
+
+### Basic Usage
+
+First, let's assume you have a `posts` table in your database with the following schema:
+
+```sql title="Database Schema"
+create table posts (
+  id serial primary key,
+  title text not null,
+  content text not null,
+  published_at timestamptz default current_timestamp,
+  updated_at timestamptz default current_timestamp
+);
+```
+
+Now, generate TypeScript types from your database schema using the tSQL CLI:
+
+```bash title="Generate types from database"
+npx tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts --camel-case
+```
+
+Replace `postgres://user:password@localhost/db_name` with your actual database connection string.
+
+You can also add this to your `package.json` as a script for convenience:
+
+```json title="package.json"
+{
+  "scripts": {
+    "db:codegen": "tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts --camel-case"
+  }
+}
+```
+
+Then run it:
+
+```package-install
+npm run db:codegen
+```
+
+### Output Example
+
+This command will generate type definitions for your database schema in the specified output file (e.g., `src/db.d.ts`):
+
+```ts title="src/db.d.ts (Example)"
+// This is an example of what might be generated.
+// Actual output depends on your schema and the codegen tool.
+export interface Posts {
+  id: number;
+  title: string;
+  content: string;
+  publishedAt: Date; // Generated as camelCase
+  updatedAt: Date; // Generated as camelCase
+}
+
+export interface Database {
+  posts: Posts;
+  // ... other tables in your database
+}
+```
+
+### Using the Generated Types
+
+Once you have your generated types, you can import them in your tSQL queries to get full type safety:
+
+```ts
+import { tsql } from "tsql";
+import type { Database } from "./db"; // Import your generated types
+
+// Create a type-safe database client
+const db = tsql<Database>({
+  url: process.env.DATABASE_URL,
+});
+
+// Get type completion and safety with your queries
+const posts = await db.query("select * from posts").execute();
+// posts will be correctly typed with Posts[]
+```
+
+### CLI Options
+
+tSQL's codegen command supports various options to customize the type generation:
+
+| Option             | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
+| `--url`            | Database connection URL                                    |
+| `--dialect`        | Database dialect (postgres, mysql, sqlite, etc.)           |
+| `--output`         | Output file path for generated types                       |
+| `--camel-case`     | Convert snake_case column names to camelCase in TypeScript |
+| `--include-schema` | Include schema name in table types                         |
+| `--exclude-tables` | Comma-separated list of tables to exclude                  |
+| `--include-tables` | Comma-separated list of tables to include                  |
+| `--env-file`       | Path to .env file for loading environment variables        |
+
+For example, to generate types only for specific tables:
+
+```bash
+npx tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts --include-tables posts,users,comments
+```
+
+### Environment Variables
+
+You can also use environment variables for sensitive information like connection strings. Create a `.env` file:
+
+```
+DATABASE_URL=postgres://user:password@localhost/db_name
+```
+
+Then run:
+
+```bash
+npx tsql codegen --env-file .env --dialect postgres --output src/db.d.ts
+```
+
+### Type Customization
+
+You might want to customize the generated types for specific columns. This can be done using override configurations:
+
+```json title=".tsqlrc.json"
+{
+  "codegen": {
+    "overrides": {
+      "users.metadata": "{ theme: string; preferences: Record<string, unknown> }"
+    }
+  }
+}
+```
+
+This would override the type for the `metadata` column in the `users` table with a more specific type.
+
+### Working with Different Databases
+
+#### PostgreSQL
+
+```bash
+npx tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts
+```
+
+#### MySQL
+
+```bash
+npx tsql codegen --url mysql://user:password@localhost/db_name --dialect mysql --output src/db.d.ts
+```
+
+#### SQLite
+
+```bash
+npx tsql codegen --url sqlite:./path/to/database.sqlite --dialect sqlite --output src/db.d.ts
+```
+
+### Best Practices
+
+1. **Version Control**: Add the generated types to version control to ensure consistency across your team.
+2. **CI/CD Integration**: Run the codegen command as part of your CI/CD pipeline to keep types in sync with your database schema.
+3. **Schema Changes**: Remember to regenerate types after schema migrations or database changes.
+4. **Custom Types**: For complex JSON or custom types, use the override feature to provide more accurate TypeScript definitions.
