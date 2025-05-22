@@ -8,6 +8,14 @@ const config = {
   experimental: {
     scrollRestoration: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/:path*.mdx",
+        destination: "/llms.mdx/:path*",
+      },
+    ];
+  },
 };
 
 export default withMDX(config);

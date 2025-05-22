@@ -8,6 +8,7 @@ import {
 import { notFound } from "next/navigation";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { getMDXComponents } from "@/mdx-components";
+import { LLMCopyButton } from "./utils.client";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -24,7 +25,10 @@ export default async function Page(props: {
       toc={page.data.toc}
       full={page.data.full}
     >
-      <DocsTitle>{page.data.title}</DocsTitle>
+      <div className='flex justify-between items-center'>
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <LLMCopyButton slug={params.slug || []} />
+      </div>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
         <MDXContent
