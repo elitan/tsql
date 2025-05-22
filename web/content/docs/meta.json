@@ -6,6 +6,7 @@
   "pages": [
     "---DOCUMENTATION---",
     "index",
+    "getting-started",
     "generate-types",
     "plugins",
     "migrations",

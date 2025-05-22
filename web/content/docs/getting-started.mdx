@@ -1,0 +1,126 @@
+---
+title: Getting Started
+description: Learn how to get started with tSQL.
+icon: Book
+---
+
+## 1. Install tSQL and Database Driver
+
+You'll need `tsql` itself and a database driver (like `pg` for PostgreSQL, which we will use in this example).
+
+```package-install
+@elitan/tsql pg
+```
+
+## 2. Generate Database Types
+
+First, let's assume you have a `posts` table in your database with the following schema:
+
+```sql title="Database Schema"
+create table posts (
+  id serial primary key,
+  title text not null,
+  content text not null,
+  published_at timestamptz default current_timestamp,
+  updated_at timestamptz default current_timestamp
+);
+```
+
+Now, generate TypeScript types from your database schema using the tSQL CLI. This step is crucial for leveraging tSQL's type safety. The `--camel-case` flag will ensure that snake_case column names (like `published_at`) are converted to camelCase (like `publishedAt`) in your generated types.
+
+```bash title="Generate types from database"
+npx tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts --camel-case
+```
+
+Replace `postgres://user:password@localhost/db_name` with your actual database connection string.
+
+You can also add this to your `package.json` as a script for convenience:
+
+```json title="package.json"
+{
+  "scripts": {
+    "db:codegen": "tsql codegen --url postgres://user:password@localhost/db_name --dialect postgres --output src/db.d.ts --camel-case"
+  }
+}
+```
+
+Then run it:
+
+```package-install
+npm run db:codegen
+```
+
+This command will generate type definitions for your database schema in the specified output file (e.g., `src/db.d.ts`):
+
+```ts title="src/db.d.ts (Example)"
+// This is an example of what might be generated.
+// Actual output depends on your schema and the codegen tool.
+export interface Posts {
+  id: number;
+  title: string;
+  content: string;
+  publishedAt: Date; // Generated as camelCase
+  updatedAt: Date; // Generated as camelCase
+}
+
+export interface Database {
+  posts: Posts;
+  // ... other tables in your database
+}
+```
+
+## 3. Connect to Your Database
+
+Once you have your types generated, you can import them and connect to your database to start writing type-safe queries. The example below uses PostgreSQL.
+
+```ts title="src/app.ts (Example)"
+import { createTSQL, PostgresDialect } from "tsql";
+import { CamelCasePlugin } from "kysely"; // tSQL can leverage Kysely plugins
+import type { Database } from "./db"; // Import the generated Database interface (path relative to this file)
+import { Pool } from "pg"; // PostgreSQL driver
+
+// Create a Postgres connection pool
+const pool = new Pool({
+  host: "localhost",
+  database: "my_db", // Replace with your database name
+  user: "postgres", // Replace with your username
+  password: "password", // Replace with your password
+  // port: 5432,        // Default Postgres port
+});
+
+// Create a tSQL instance
+const db = createTSQL<Database>({
+  dialect: new PostgresDialect({
+    pool,
+  }),
+  plugins: [
+    new CamelCasePlugin(), // Automatically converts snake_case columns to camelCase properties
+  ],
+});
+
+async function main() {
+  // Example: Select recent posts
+  const recentPosts = await db
+    .selectFrom("posts")
+    .select(["id", "title", "publishedAt"]) // Type-safe selection
+    .orderBy("publishedAt", "desc")
+    .limit(10)
+    .execute();
+
+  for (const post of recentPosts) {
+    // `post.publishedAt` is a Date object and `post.title` is a string
+    console.log(
+      `Post ID: ${post.id}, Title: ${
+        post.title
+      }, Published: ${post.publishedAt.toDateString()}`
+    );
+  }
+
+  await db.destroy();
+}
+
+main().catch((error) => {
+  console.error("An error occurred:", error);
+  process.exit(1);
+});
+```
