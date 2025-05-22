@@ -23,6 +23,6 @@ export const baseOptions: BaseLayoutProps = {
       </>
     ),
   },
-  githubUrl: "https://github.com/tsql-dev/tsql",
+  githubUrl: "https://github.com/elitan/tsql",
   links: [],
 };
